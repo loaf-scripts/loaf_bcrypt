@@ -7,6 +7,8 @@ const worker = new Worker(path.join(resourcePath, '/server/worker.js'))
 
 const queue = new Map<number, (result: string | boolean) => void>()
 
+let nextId = 0
+
 worker.on('message', (message: { id: number; result: string | boolean }) => {
     const callback = queue.get(message.id)
 
@@ -23,7 +25,7 @@ worker.on('error', (error) => {
 
 exports('GetPasswordHash', (password: string) => {
     return new Promise((resolve) => {
-        const id = Math.random()
+        const id = nextId++
 
         queue.set(id, resolve)
 
@@ -37,7 +39,7 @@ exports('GetPasswordHash', (password: string) => {
 
 exports('VerifyPasswordHash', (password: string, hash: string) => {
     return new Promise((resolve) => {
-        const id = Math.random()
+        const id = nextId++
 
         queue.set(id, resolve)
 
