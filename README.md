@@ -6,7 +6,7 @@ A FiveM resource for hashing and verifying passwords using bcrypt in a separate 
 
 1. Download the latest release from the [releases page](https://github.com/loaf-scripts/loaf_bcrypt/releases/latest/download/loaf_bcrypt.zip)
 2. Add `start loaf_bcrypt` to your server.cfg
-3. Add `add_unsafe_worker_permission password` to your server.cfg
+3. Add `add_unsafe_worker_permission loaf_bcrypt` to your server.cfg
 
 ## Usage
 
