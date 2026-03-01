@@ -1,0 +1,53 @@
+name: Build
+
+on:
+    push:
+        tags:
+            - 'v*'
+
+permissions:
+    contents: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Get version from tag
+              id: version
+              run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Install dependencies
+              run: bun install
+              working-directory: node
+
+            - name: Build
+              run: bun run build.ts
+              working-directory: node
+
+            - name: Delete node folder
+              run: rm -rf node
+
+            - name: Delete .gitignore
+              run: rm -f .gitignore
+
+            - name: Update version in fxmanifest.lua
+              run: sed -i "s/version \".*\"/version \"${{ steps.version.outputs.VERSION }}\"/" fxmanifest.lua
+
+            - name: Create zip
+              run: |
+                  mkdir -p ../output
+                  zip -r ../output/loaf_bcrypt.zip . -x ".git/*" ".github/*"
+
+            - name: Create release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: ${{ github.ref_name }}
+                  files: ../output/loaf_bcrypt.zip
+                  generate_release_notes: true
