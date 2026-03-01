@@ -38,7 +38,7 @@ jobs:
               run: rm -f .gitignore
 
             - name: Update version in fxmanifest.lua
-              run: sed -i "s/version \".*\"/version \"${{ steps.version.outputs.VERSION }}\"/" fxmanifest.lua
+              run: sed -i "s/^version \".*\"/version \"${{ steps.version.outputs.VERSION }}\"/" fxmanifest.lua
 
             - name: Create zip
               run: |
