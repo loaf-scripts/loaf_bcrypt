@@ -1,23 +1,23 @@
 import bcrypt from 'bcryptjs'
 import { parentPort } from 'worker_threads'
+import type { WorkerRequest, WorkerResponse } from './types'
 
-function onMessage(
-    message: { id: number } & (
-        | { action: 'hash'; password: string }
-        | { action: 'compare'; password: string; hash: string }
-    )
-) {
-    const { id, action, password } = message
+parentPort!.on('message', (message: WorkerRequest) => {
+    try {
+        const { action, id, password } = message
 
-    if (action === 'hash') {
-        bcrypt.hash(password, 11).then((result) => {
-            parentPort!.postMessage({ id, result })
-        })
-    } else if (action === 'compare') {
-        bcrypt.compare(password, message.hash).then((result) => {
-            parentPort!.postMessage({ id, result })
-        })
+        if (action === 'hash') {
+            parentPort!.postMessage({
+                id,
+                result: bcrypt.hashSync(password, 11)
+            } satisfies WorkerResponse)
+        } else if (action === 'compare') {
+            parentPort!.postMessage({
+                id: id,
+                result: bcrypt.compareSync(password, message.hash)
+            } satisfies WorkerResponse)
+        }
+    } catch (error) {
+        parentPort!.postMessage({ id: message.id, error } satisfies WorkerResponse)
     }
-}
-
-parentPort!.on('message', onMessage)
+})
