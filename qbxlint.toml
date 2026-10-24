@@ -1,0 +1,8 @@
+[format]
+indent_width = 4
+use_tabs = false
+quote_style = "double"
+
+[[overrides]]
+files = ["import.lua"]
+side = "server"
