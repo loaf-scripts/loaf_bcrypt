@@ -42,8 +42,10 @@ jobs:
 
             - name: Create zip
               run: |
-                  mkdir -p ../output
-                  zip -r ../output/loaf_bcrypt.zip . -x ".git/*" ".github/*"
+                  mkdir -p ../output/loaf_bcrypt
+                  rsync -a --exclude .git --exclude .github ./ ../output/loaf_bcrypt/
+                  cd ../output
+                  zip -r loaf_bcrypt.zip loaf_bcrypt
 
             - name: Create release
               uses: softprops/action-gh-release@v2
